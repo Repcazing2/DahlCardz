@@ -1,0 +1,14 @@
+{
+  "name": "dahlcardz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "micro": "^10.0.1",
+    "stripe": "^16.0.0"
+  }
+}

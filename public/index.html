@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DahlCardZ — Køb & Sælg Pokémon-kort</title>
+  <meta name="description" content="DahlCardZ: Dansk markedsplads for Pokémon-kort. Køb & sælg sikkert med Stripe/PayPal." />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">
+        <img src="https://i.ibb.co/MkRYf7qP/logo.png" alt="DahlCardZ logo" class="brand-logo" />
+        <span class="brand-name">DahlCardZ</span>
+      </a>
+
+      <nav class="nav" aria-label="Hovedmenu">
+        <button class="nav-toggle" aria-expanded="false" aria-controls="navMenu" aria-label="Åbn/luk menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <ul id="navMenu" class="nav-menu">
+          <li><a href="listings.html">Alle opslag</a></li>
+          <li><a href="#sell">Sælg</a></li>
+          <li><a href="#arrivals">Nye</a></li>
+          <li><a href="#trust">Garantier</a></li>
+          <li><a href="#newsletter">Fællesskab</a></li>
+          <li><a href="admin.html" id="adminLink" class="hide">Admin</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-cta">
+        <span id="authUser" class="small"></span>
+        <button class="btn btn-outline" id="btnLogin">Log ind</button>
+        <button class="btn btn-outline hide" id="btnLogout">Log ud</button>
+        <button class="btn btn-outline cart-open" aria-label="Åbn kurv">
+          <i class="fa-solid fa-cart-shopping"></i><span class="cart-count" aria-live="polite">0</span>
+        </button>
+        <a href="#sell" class="btn btn-primary">Sælg et kort</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <h1>Fang kortene. Behold værdien.</h1>
+        <p>Køb og sælg Pokémon-kort med ro i maven – ægthedstjek, hurtig forsendelse og sikre betalinger.</p>
+        <div class="hero-actions">
+          <a href="listings.html" class="btn btn-secondary">Se alle opslag</a>
+          <a href="#sell" class="link-ghost"><i class="fa-solid fa-arrow-right"></i> Sådan fungerer salg</a>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="https://images.unsplash.com/photo-1520975922284-85d01dfeee34?q=80&w=1600&auto=format&fit=crop" alt="Blandede samlekort på bord" />
+      </div>
+    </div>
+    <div class="hero-glow" aria-hidden="true"></div>
+  </section>
+
+  <!-- NYE VARER (nyeste 8 fra DB) -->
+  <section id="arrivals" class="section arrivals">
+    <div class="container">
+      <header class="section-head">
+        <h2>Nye varer</h2>
+        <p>De seneste opslag fra samlere.</p>
+      </header>
+      <div class="card-grid" id="arrivalsGrid"></div>
+      <div class="section-actions">
+        <a href="listings.html" class="btn btn-outline">Se alle</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SÆLG -->
+  <section id="sell" class="section sell">
+    <div class="container">
+      <header class="section-head">
+        <h2>Sælg hos DahlCardZ</h2>
+        <p>Opret dit opslag – ingen dummy-data, alt gemmes i din konto.</p>
+      </header>
+
+      <div class="sell-grid">
+        <!-- Trin -->
+        <div class="steps">
+          <div class="step"><div class="step-icon"><i class="fa-solid fa-camera"></i></div><h3>1. Opret</h3><p>Upload billede, titel, pris og detaljer.</p></div>
+          <div class="step"><div class="step-icon"><i class="fa-solid fa-bolt"></i></div><h3>2. Betaling</h3><p>Købere betaler via Stripe/PayPal.</p></div>
+          <div class="step"><div class="step-icon"><i class="fa-solid fa-box-open"></i></div><h3>3. Send</h3><p>Tracking deles automatisk til køber.</p></div>
+        </div>
+
+        <!-- Formular -->
+        <form id="sellForm" class="sell-form" autocomplete="off">
+          <div class="field full">
+            <label class="label">Billede (cover)*</label>
+            <input id="photo" type="file" accept="image/*" required />
+            <span class="small">PNG/JPG op til ca. 5MB. Gemmes i Supabase Storage.</span>
+          </div>
+
+          <div class="field">
+            <label class="label" for="title">Titel*</label>
+            <input id="title" type="text" placeholder="fx Charizard Holo • #004" required />
+          </div>
+
+          <div class="field">
+            <label class="label" for="set">Sæt</label>
+            <input id="set" type="text" placeholder="fx Base Set" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="number">Kortnr.</label>
+            <input id="number" type="text" placeholder="fx 004/102" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="condition">Stand*</label>
+            <select id="condition" required>
+              <option>NM</option><option>LP</option><option>MP</option><option>HP</option><option>DMG</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="category">Kategori</label>
+            <select id="category">
+              <option>Singles</option><option>Sealed</option><option>Graded</option><option>Vintage</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="badge">Badge</label>
+            <input id="badge" type="text" placeholder="fx PSA 9, SEALED, NM" />
+          </div>
+
+          <div class="field">
+            <label class="label" for="price">Pris (DKK)*</label>
+            <input id="price" type="number" min="0" step="0.5" required />
+          </div>
+
+          <div class="field full">
+            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Udgiv opslag</button>
+            <p class="small" id="sellMsg"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section id="trust" class="section trust">
+    <div class="container trust-grid">
+      <div class="trust-card"><i class="fa-solid fa-shield-halved"></i><h3>Ægthed først</h3><p>Nultolerance for kopier.</p></div>
+      <div class="trust-card"><i class="fa-solid fa-truck-fast"></i><h3>Hurtig forsendelse</h3><p>Tracking i DK/SE/NO/DE.</p></div>
+      <div class="trust-card"><i class="fa-solid fa-rotate-left"></i><h3>Retur</h3><p>7 dages returret.</p></div>
+      <div class="trust-card"><i class="fa-solid fa-lock"></i><h3>Sikre betalinger</h3><p>Stripe & PayPal.</p></div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section id="newsletter" class="section newsletter">
+    <div class="container newsletter-inner">
+      <div class="newsletter-copy">
+        <h2>Bliv en del af DahlCardZ</h2>
+        <p>Få drops, prisalarmer og events — ingen spam.</p>
+      </div>
+      <form class="newsletter-form" onsubmit="event.preventDefault()">
+        <input type="email" placeholder="dig@eksempel.dk" required />
+        <button class="btn btn-secondary">Tilmeld</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <a class="brand brand-footer" href="index.html">
+          <img src="https://i.ibb.co/MkRYf7qP/logo.png" alt="DahlCardZ logo" class="brand-logo" />
+          <span class="brand-name">DahlCardZ</span>
+        </a>
+        <p class="small">Bygget af samlere — baseret i Danmark.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Markedsplads</h4>
+        <ul>
+          <li><a href="listings.html">Alle opslag</a></li>
+          <li><a href="#sell">Sælg</a></li>
+          <li><a href="#trust">Garantier</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Hjælp</a></li>
+          <li><a href="#">Køberbeskyttelse</a></li>
+          <li><a href="#">Fragt & retur</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Konto</h4>
+        <ul>
+          <li><a href="#" id="footerLogin">Log ind</a></li>
+          <li><a href="#" id="footerLogout" class="hide">Log ud</a></li>
+          <li><a href="admin.html">Admin</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-base">
+      <p class="small">© <span id="year"></span> DahlCardZ. Alle rettigheder forbeholdes.</p>
+      <ul class="legal small"><li><a href="#">Vilkår</a></li><li><a href="#">Privatliv</a></li><li><a href="#">Cookies</a></li></ul>
+    </div>
+  </footer>
+
+  <!-- MINI-KURV -->
+  <aside class="cart-drawer" aria-hidden="true" aria-labelledby="cartTitle" role="dialog">
+    <div class="cart-drawer-inner">
+      <header class="cart-header">
+        <h3 id="cartTitle">Din kurv</h3>
+        <button class="cart-close" aria-label="Luk kurv"><i class="fa-solid fa-xmark"></i></button>
+      </header>
+      <ul class="cart-list" id="cartList"></ul>
+      <div class="cart-summary">
+        <div class="row"><span>Subtotal</span><strong>DKK <span id="cartSubtotal">0</span></strong></div>
+        <p class="small">Fragt og moms beregnes ved checkout.</p>
+        <button class="btn btn-primary" id="payStripe">Betal med Stripe</button>
+        <div id="paypalContainer" style="margin-top:.6rem;"></div>
+      </div>
+    </div>
+    <div class="cart-backdrop"></div>
+  </aside>
+
+  <!-- PayPal SDK (indsæt dit client-id i Vercel env og her) -->
+  <script src="https://www.paypal.com/sdk/js?client-id=<?=PAYPAL_CLIENT_ID?>&currency=DKK"></script>
+</body>
+</html>

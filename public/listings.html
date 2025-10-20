@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alle opslag — DahlCardZ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html"><img src="https://i.ibb.co/MkRYf7qP/logo.png" class="brand-logo" alt=""><span class="brand-name">DahlCardZ</span></a>
+    <nav class="nav">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="navMenu"><i class="fa-solid fa-bars"></i></button>
+      <ul id="navMenu" class="nav-menu">
+        <li><a href="listings.html" aria-current="page">Alle opslag</a></li>
+        <li><a href="index.html#sell">Sælg</a></li>
+        <li><a href="admin.html" id="adminLink" class="hide">Admin</a></li>
+      </ul>
+    </nav>
+    <div class="header-cta">
+      <span id="authUser" class="small"></span>
+      <button class="btn btn-outline" id="btnLogin">Log ind</button>
+      <button class="btn btn-outline hide" id="btnLogout">Log ud</button>
+      <button class="btn btn-outline cart-open"><i class="fa-solid fa-cart-shopping"></i><span class="cart-count">0</span></button>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <header class="section-head">
+      <h2>Alle opslag</h2>
+      <p>Søg, filtrér og sorter.</p>
+    </header>
+
+    <form id="filters" class="filters" onsubmit="event.preventDefault()">
+      <div class="filters-row">
+        <div class="filters-group">
+          <div class="filters-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="search" type="search" placeholder="Søg titel, sæt, kortnr…" />
+          </div>
+        </div>
+        <div class="filters-group">
+          <label for="cond" class="filters-label">Stand</label>
+          <select id="cond"><option value="">Alle</option><option>NM</option><option>LP</option><option>MP</option><option>HP</option><option>DMG</option></select>
+        </div>
+        <div class="filters-group">
+          <label for="sort" class="filters-label">Sorter</label>
+          <select id="sort"><option value="new">Nyeste</option><option value="priceAsc">Pris (lav → høj)</option><option value="priceDesc">Pris (høj → lav)</option></select>
+        </div>
+        <div class="filters-group">
+          <label for="perPage" class="filters-label">Pr. side</label>
+          <select id="perPage"><option>8</option><option selected>12</option><option>16</option><option>24</option></select>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div id="allGrid" class="card-grid"></div>
+    <div class="pagination">
+      <button class="btn btn-outline" id="prevPage" disabled><i class="fa-solid fa-angle-left"></i> Forrige</button>
+      <span id="pageInfo" class="small">Side 1/1</span>
+      <button class="btn btn-outline" id="nextPage">Næste <i class="fa-solid fa-angle-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- Mini-kurv -->
+<aside class="cart-drawer" aria-hidden="true" aria-labelledby="cartTitle" role="dialog">
+  <div class="cart-drawer-inner">
+    <header class="cart-header">
+      <h3 id="cartTitle">Din kurv</h3>
+      <button class="cart-close" aria-label="Luk kurv"><i class="fa-solid fa-xmark"></i></button>
+    </header>
+    <ul class="cart-list" id="cartList"></ul>
+    <div class="cart-summary">
+      <div class="row"><span>Subtotal</span><strong>DKK <span id="cartSubtotal">0</span></strong></div>
+      <p class="small">Fragt og moms beregnes ved checkout.</p>
+      <button class="btn btn-primary" id="payStripe">Betal med Stripe</button>
+      <div id="paypalContainer" style="margin-top:.6rem;"></div>
+    </div>
+  </div>
+  <div class="cart-backdrop"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js" defer></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=DKK"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — DahlCardZ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html"><img src="https://i.ibb.co/MkRYf7qP/logo.png" class="brand-logo" alt=""><span class="brand-name">DahlCardZ</span></a>
+    <div class="header-cta">
+      <span id="authUser" class="small"></span>
+      <button class="btn btn-outline" id="btnLogout">Log ud</button>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <header class="section-head">
+      <h2>Adminpanel</h2>
+      <p>Se, redigér eller slet opslag. Kun for admins.</p>
+    </header>
+
+    <div id="adminWarn" class="small" style="margin-bottom:.8rem;color:#f87171;"></div>
+
+    <div class="card-grid" id="adminGrid"></div>
+  </div>
+</section>
+
+<script>
+  // Admin gate
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { supa, requireAdmin } = window.Dahl;
+    const ok = await requireAdmin();
+    if (!ok) {
+      document.getElementById('adminWarn').textContent = 'Adgang nægtet — kræver admin-rolle.';
+      return;
+    }
+    window.Dahl.renderAdmin();
+  });
+</script>
+</body>
+</html>
