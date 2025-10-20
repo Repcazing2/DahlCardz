@@ -1,26 +1,36 @@
-const paypal = require('@paypal/checkout-server-sdk');
+import paypal from "@paypal/paypal-server-sdk";
 
-function client() {
-  const isLive = process.env.PAYPAL_MODE === 'live';
-  const env = isLive
-    ? new paypal.core.LiveEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET)
-    : new paypal.core.SandboxEnvironment(process.env.PAYPAL_CLIENT_ID, process.env.PAYPAL_CLIENT_SECRET);
+const client = () => {
+  const env =
+    process.env.PAYPAL_MODE === "live"
+      ? new paypal.core.LiveEnvironment(
+          process.env.PAYPAL_CLIENT_ID,
+          process.env.PAYPAL_CLIENT_SECRET
+        )
+      : new paypal.core.SandboxEnvironment(
+          process.env.PAYPAL_CLIENT_ID,
+          process.env.PAYPAL_CLIENT_SECRET
+        );
   return new paypal.core.PayPalHttpClient(env);
-}
+};
 
-module.exports = async (req, res) => {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+export default async function handler(req, res) {
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Method not allowed" });
 
   try {
     const { orderId } = req.body || {};
+    if (!orderId)
+      return res.status(400).json({ error: "Missing orderId" });
+
     const request = new paypal.orders.OrdersCaptureRequest(orderId);
     request.requestBody({});
     const capture = await client().execute(request);
 
-    // TODO: Fulfillment — skriv ordre i DB, send kvittering osv.
+    console.log("✅ PayPal captured:", capture.result.id);
     res.status(200).json({ capture: capture.result });
   } catch (err) {
-    console.error('PayPal capture error:', err);
-    res.status(500).json({ error: 'PayPal capture failed' });
+    console.error("PayPal capture-order error:", err);
+    res.status(500).json({ error: "PayPal capture-order failed" });
   }
-};
+}
